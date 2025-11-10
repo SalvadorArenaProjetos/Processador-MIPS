@@ -1,5 +1,3 @@
-Crie um read.me usando esse texto:
-
 # Construindo um Processador MIPS no Logisim Evolution
 
 Este repositório contém a implementação prática de um **processador baseado na arquitetura MIPS** desenvolvido no simulador Logisim Evolution. O projeto é resultado das aulas práticas da disciplina GCC194 - Arquitetura de Computadores, que abordam desde os conceitos básicos de lógica digital até a construção completa de um processador funcional.

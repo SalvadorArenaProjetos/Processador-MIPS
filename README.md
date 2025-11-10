@@ -3,18 +3,14 @@
 Este projeto implementa um processador MIPS simplificado e adaptado, desenvolvido no Logisim para fins educacionais. O processador possui uma arquitetura de 8 bits com pipeline de 3 estágios.
 
 ## 📋 Especificações Técnicas
-
-### Arquitetura Geral
 - **Barramento de dados**: 8 bits
 - **Barramento de endereços**: 8 bits
 - **Tamanho da instrução**: 18 bits
 - **Quantidade de registradores**: 8
 - **Pipeline**: 3 estágios (IFU, IDU, EXU)
 
-### Unidades Principais
-
+# Unidades
 ## 1. Instruction Fetch Unit (IFU)
-
 Responsável por buscar instruções da memória e controlar o fluxo do programa.
 
 ### Componentes:
@@ -23,8 +19,7 @@ Responsável por buscar instruções da memória e controlar o fluxo do programa
 - **Lógica de desvio**: Controla sequência de execução
 
 ### Lógica de Controle do PC:
-
-Próximo PC = (J + (B × Z)) ? ID:Address/IMM : PC + 1
+`Próximo PC = (J + (B × Z)) ? ID:Address/IMM : PC + 1`
 
 Onde:
 - **J**: Sinal Jump da Control Unit
@@ -32,19 +27,16 @@ Onde:
 - **Z**: Sinal Equals da ALU
 
 ## 2. Instruction Decode Unit (IDU)
-
 Decodifica instruções e gera sinais de controle.
 
 ### Instruction Decoder
 Separa os 18 bits da instrução em campos:
 
 #### Formato R (Register):
-
-[17:15] Opcode | [14:12] Rs | [11:9] Rt | [8:6] Rd | [5:3] Shamt | [2:0] Funct
+`[17:15] Opcode | [14:12] Rs | [11:9] Rt | [8:6] Rd | [5:3] Shamt | [2:0] Funct`
 
 #### Formato I (Immediate):
-[17:15] Opcode | [14:12] Rs | [11:9] Rt | [8] X | [7:0] Address/IMM
-
+`[17:15] Opcode | [14:12] Rs | [11:9] Rt | [8] X | [7:0] Address/IMM`
 
 ### Control Unit (CU)
 Gera sinais de controle baseados no Opcode:
@@ -59,7 +51,6 @@ Gera sinais de controle baseados no Opcode:
 | 111    | j         | X       | 0        | X       | 0        | 0       | X        | 0       | 1    | XX    |
 
 ## 3. Execution Unit (EXU)
-
 Executa operações e gerencia dados.
 
 ### Register File
@@ -68,7 +59,7 @@ Executa operações e gerencia dados.
 - **Porta de escrita**: 1 (Write data)
 
 #### Mapeamento de Registradores:
-000: $zero (sempre 0)
+```000: $zero (sempre 0)
 001: $t0
 010: $t1
 011: $t2
@@ -76,7 +67,7 @@ Executa operações e gerencia dados.
 101: $t4
 110: $t5
 111: $t6
-
+```
 
 ### ALU (Arithmetic Logic Unit)
 Operações suportadas:
@@ -99,19 +90,21 @@ Operações suportadas:
 ## 🔧 Conjunto de Instruções
 
 ### Instruções Tipo R (Opcode: 000)
-add $rd, $rs, $rt # $rd = $rs + $rt
+```add $rd, $rs, $rt # $rd = $rs + $rt
 sub $rd, $rs, $rt # $rd = $rs - $rt
 mult $rd, $rs, $rt # $rd = $rs × $rt
 slt $rd, $rs, $rt # $rd = ($rs < $rt) ? 1 : 0
+```
 
 ### Instruções Tipo I
-addi $rt, $rs, IMM # $rt = $rs + IMM
+```addi $rt, $rs, IMM # $rt = $rs + IMM
 lw $rt, IMM($rs) # $rt = MEM[$rs + IMM]
 sw $rt, IMM($rs) # MEM[$rs + IMM] = $rt
 beq $rs, $rt, IMM # if ($rs == $rt) PC = IMM
+```
 
 ### Instruções Tipo J
-j IMM # PC = IMM
+`j IMM # PC = IMM`
 
 
 ## 💻 Exemplo de Programação
@@ -182,16 +175,20 @@ Acesso à memória: durante estágio EXU
 - Conjunto reduzido de instruções
 - Não suporta interrupções ou exceções
 
-## Integrantes do Projeto
-
+## 👨‍🏫 Integrantes e créditos
 - Aline Cristina Ribeiro de Barros – RA: 081230021
 - Luis Gustavo de Oliveira Carneiro – RA: 081230029
 - Roger Rocha da Silva – RA: 081230045
 - João Victor Pereira Andrade – RA: 081230010
 - André Mendes Garcia - RA: 081230012
 
-## Licença
+### Agradecimentos Especiais
+- Professor [Bruno Abreu](https://www.youtube.com/@brunoabreu8105), fornecendo a arquitetura base
 
+- Professor [Vinícius Borges](https://www.linkedin.com/in/vinicius-borges-07a170153/), fornecendo base técnica em arquitetura de computadores
+
+
+## Licença
 Este projeto é de uso acadêmico e livre para consulta e aprendizado, conforme os princípios de uso educacional da disciplina Arquitetura de Computadores.
 
 Novembro de 2025.

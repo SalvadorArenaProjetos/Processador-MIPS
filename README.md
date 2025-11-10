@@ -1,162 +1,202 @@
-# Construção de um Processador MIPS no Logisim Evolution
+Construção de um Processador MIPS no Logisim Evolution
 
-Este repositório apresenta a construção e documentação de um processador baseado na arquitetura MIPS, implementado no simulador **Logisim Evolution**.  
-O projeto foi desenvolvido como parte da disciplina **GCC194 – Arquitetura de Computadores**, e busca demonstrar de maneira prática e visual os princípios fundamentais que regem o funcionamento interno de processadores baseados em arquitetura RISC (Reduced Instruction Set Computer).
+Este projeto apresenta a construção de um processador baseado na arquitetura MIPS (Microprocessor without Interlocked Pipeline Stages) utilizando o simulador Logisim Evolution. Ele foi desenvolvido como parte da disciplina GCC194 – Arquitetura de Computadores e demonstra, de forma prática, os princípios fundamentais de um processador RISC (Reduced Instruction Set Computer).
 
----
+Objetivos do Projeto
 
-## 1. Introdução
+Entender o funcionamento interno de um processador em nível de hardware.
 
-A arquitetura MIPS é amplamente utilizada em ambientes educacionais por sua estrutura limpa, modular e orientada a instruções simples.  
-Seu conjunto de instruções reduzido e padronizado torna possível compreender, de forma incremental, como dados e instruções são processados, desde o nível lógico até a execução.
+Projetar e implementar cada módulo do processador MIPS simplificado.
 
-O projeto aqui apresentado foi desenvolvido inteiramente no Logisim Evolution, com o objetivo de **reproduzir as etapas essenciais da arquitetura MIPS** — desde o **Program Counter (PC)** e a **Memória de Instruções** até a **Unidade Lógica e Aritmética (ULA)** e a **Memória de Dados** — integrando todos os módulos para formar um processador funcional capaz de executar instruções básicas.
+Simular o ciclo completo de execução de instruções: busca, decodificação, execução, acesso à memória e escrita no registrador.
 
----
+Consolidar os conceitos teóricos de arquitetura de computadores através da implementação prática em circuito digital.
 
-## 2. Objetivos
+Estrutura do Projeto
 
-- Compreender o funcionamento de um processador RISC em nível de hardware lógico.  
-- Desenvolver, de forma modular, os principais componentes que compõem a arquitetura MIPS.  
-- Integrar todos os módulos em um único circuito funcional.  
-- Simular o ciclo de instrução completo: **busca**, **decodificação**, **execução**, **memória** e **escrita de resultado**.  
-- Relacionar conceitos teóricos de arquitetura de computadores com a prática de implementação digital.  
+O processador foi desenvolvido em quatro etapas principais, baseadas nas transmissões da série “GCC194 – Construindo um Processador ao Vivo”, com a criação de módulos independentes e integração final.
 
----
+graph TD
+    A[Program Counter (PC)] --> B[Memória de Instruções]
+    B --> C[Banco de Registradores]
+    C --> D[ULA - Unidade Lógica e Aritmética]
+    D --> E[Memória de Dados]
+    E --> F[Resultado / Saída]
+    D -->|Sinais de Controle| G[Unidade de Controle]
+    G -->|OpCode / Funct| D
+    G -->|Controle de Fluxo| A
 
-## 3. Estrutura do Projeto
+Módulos do Processador
+1. Program Counter (PC) e Memória de Instruções
 
-O projeto foi desenvolvido em quatro etapas principais, baseadas nas transmissões da série **“GCC194 – Construindo um Processador ao Vivo”**.  
-Cada parte foi responsável pela implementação e explicação detalhada de um módulo fundamental.
+O Program Counter é o responsável por armazenar o endereço da próxima instrução a ser executada.
+A Memória de Instruções contém o conjunto binário de instruções que o processador deve executar.
 
----
+graph LR
+    CLK[Clock] --> PC[Registrador - Program Counter]
+    PC --> INC[Incrementador (+1)]
+    INC --> MUX[MUX - Seleção de Endereço]
+    MUX --> ROM[Memória de Instruções]
+    ROM --> IR[Registrador de Instrução]
+    MUX -->|Sinal de Desvio| JMP[Endereço de Salto]
 
-### Parte 1 – Program Counter e Memória de Instruções
 
-Nesta etapa inicial, foi feita a introdução ao **Logisim Evolution** e aos blocos básicos da lógica digital.  
-O foco esteve na construção do **contador de programa (PC)** e da **memória de instruções**, responsáveis pela etapa de **busca** do ciclo de instruções.
+Funções principais:
 
-**Conceitos e implementações abordadas:**
-- Revisão dos princípios de lógica combinacional e sequencial.  
-- Implementação do **PC (Program Counter)** utilizando registradores de 8 bits e controle de clock.  
-- Criação da **Memória de Instruções** por meio de um bloco de memória ROM configurável.  
-- Introdução ao conceito de **endereçamento sequencial de instruções** e atualização do PC.  
-- Aplicação de sinais de controle para **incremento automático do PC** a cada ciclo de clock.  
-- Testes de funcionamento com instruções representadas em **código binário**.  
+Incremento automático do contador a cada ciclo.
 
-O resultado desta fase é um circuito capaz de buscar instruções armazenadas sequencialmente na memória, simulando a primeira etapa do funcionamento de um processador real.
+Capacidade de salto para execução de instruções condicionais.
 
----
+Leitura contínua de instruções armazenadas em memória ROM.
 
-### Parte 2 – Banco de Registradores
+2. Banco de Registradores
 
-A segunda parte foi dedicada à construção do **Banco de Registradores**, responsável por armazenar temporariamente os dados manipulados pela ULA e pelas instruções.
+O Banco de Registradores é responsável pelo armazenamento temporário de dados e resultados intermediários.
+Ele utiliza múltiplos registradores de 8 bits com endereçamento seletivo.
 
-**Principais tópicos desenvolvidos:**
-- Introdução ao conceito de **registradores de propósito geral**.  
-- Criação de registradores de 8 bits utilizando **flip-flops tipo D**.  
-- Utilização de **demultiplexadores** e **multiplexadores** para controlar quais registradores são lidos e escritos.  
-- Implementação do sinal **RegWrite**, que habilita a escrita apenas quando necessário.  
-- Estrutura de leitura simultânea de dois registradores (Read Data 1 e Read Data 2).  
-- Demonstração prática de operações de leitura e escrita utilizando o Logisim.  
+graph LR
+    A[Endereço de Leitura 1] --> DEC1[Decodificador]
+    B[Endereço de Leitura 2] --> DEC2[Decodificador]
+    C[Endereço de Escrita] --> DEC3[Decodificador]
+    DEC1 --> REGS[Registradores de 8 bits]
+    DEC2 --> REGS
+    DEC3 --> REGS
+    REGS --> MUX1[Saída Leitura 1]
+    REGS --> MUX2[Saída Leitura 2]
+    MUX1 --> ULA[Entrada A]
+    MUX2 --> ULA[Entrada B]
 
-Esta fase consolidou a base de manipulação de dados, permitindo que valores pudessem ser armazenados e recuperados de forma controlada.  
-O banco de registradores se tornou o ponto de interligação entre o PC, a memória e a ULA.
 
----
+Características principais:
 
-### Parte 3 – Unidade Lógica e Aritmética (ULA) e Memória de Dados
+Leituras duplas simultâneas e escrita síncrona.
 
-A terceira etapa abordou dois dos blocos mais importantes da arquitetura MIPS: a **Unidade Lógica e Aritmética (ULA)** e a **Memória de Dados**.
+Cada registrador é endereçado por código binário.
 
-**Implementações e conceitos trabalhados:**
-- Estrutura interna da **ULA**, com operações básicas de soma, subtração, AND, OR, XOR e comparação (Set on Less Than).  
-- Construção de circuitos combinacionais para seleção da operação a ser executada.  
-- Implementação de um **multiplexador de controle da ULA**, selecionando a operação conforme o código de função da instrução.  
-- Integração da ULA com o Banco de Registradores, permitindo operações diretas entre registradores.  
-- Criação da **Memória de Dados**, responsável por armazenar os resultados de operações e variáveis utilizadas em instruções do tipo load/store.  
-- Simulação completa de um ciclo de execução: leitura de dados, operação lógica ou aritmética e gravação do resultado.  
+Comunicação direta com a ULA.
 
-Nesta fase, o processador passou a ter capacidade de realizar **operações aritméticas completas**, simulando o comportamento de instruções MIPS como `ADD`, `SUB`, `AND`, `OR` e `LW/SW`.
+3. Unidade Lógica e Aritmética (ULA)
 
----
+A ULA realiza as operações matemáticas e lógicas com base nos sinais de controle vindos da unidade de controle.
 
-### Parte 4 – Unidade de Controle e Integração Final
+graph TD
+    A[Entrada A] --> ALU[ULA]
+    B[Entrada B] --> ALU
+    CTRL[Sinal de Controle] --> ALU
+    ALU --> OUT[Saída do Resultado]
+    ALU --> FLAG[Flags: Zero / Negativo / Overflow]
 
-Na última fase (mencionada nos vídeos subsequentes), os módulos construídos foram integrados e coordenados por uma **Unidade de Controle**.  
-Essa unidade é responsável por gerar todos os sinais de controle necessários para o funcionamento sincronizado do processador.
 
-**Elementos principais da integração:**
-- Criação da **Main Control Unit**, responsável pela geração dos sinais de controle com base no opcode das instruções.  
-- Implementação da **ALU Control Unit**, que decodifica o campo “funct” e define a operação a ser executada pela ULA.  
-- Integração dos caminhos de dados entre todos os módulos: PC → Memória de Instruções → Banco de Registradores → ULA → Memória de Dados.  
-- Demonstração do **caminho completo de execução**: a instrução é buscada, decodificada, executada e o resultado armazenado.  
-- Testes práticos com instruções completas em formato binário, simulando pequenos programas no Logisim.  
+Operações implementadas:
 
-Com a integração final, o circuito passou a representar um **processador funcional simplificado**, capaz de executar um subconjunto significativo do conjunto de instruções MIPS.
+Soma e subtração.
 
----
+AND, OR, XOR e NOT.
 
-## 4. Ferramentas Utilizadas
+Comparações e definição de flags.
 
-- **Logisim Evolution** – Simulador de circuitos digitais usado para o desenvolvimento e testes.  
-- **Java Runtime Environment (JRE)** – Necessário para execução do Logisim.  
-- **Editor de texto** – Utilizado para documentação e codificação das instruções em formato binário.  
-- **Material de referência:** Patterson, D. A., & Hennessy, J. L. *Computer Organization and Design – The Hardware/Software Interface.*
+A ULA também gera sinais para controle de fluxo condicional e escrita em registradores.
 
----
+4. Memória de Dados
 
-## 5. Conceitos Fundamentais Aplicados
+A Memória de Dados armazena informações manipuladas durante a execução de instruções.
+Sua integração com a ULA permite leitura e escrita condicionadas por sinais de controle.
 
-Durante o desenvolvimento do projeto, foram abordados e aplicados os seguintes conceitos:
+graph LR
+    ADDR[Endereço de Memória] --> MEM[Memória RAM]
+    DATAIN[Entrada de Dados] --> MEM
+    MEM --> DATAOUT[Saída de Dados]
+    CTRL[Sinal de Leitura/Escrita] --> MEM
 
-- Lógica combinacional e sequencial  
-- Portas lógicas (AND, OR, XOR, NOT)  
-- Multiplexadores e demultiplexadores  
-- Flip-flops tipo D e registradores  
-- Contador de Programa (Program Counter)  
-- Banco de Registradores  
-- Unidade Lógica e Aritmética (ULA)  
-- Memória de Instruções e de Dados  
-- Ciclo de Clock e sincronização  
-- Unidade de Controle (Main Control e ALU Control)  
-- Caminho de Dados (Datapath)  
-- Arquitetura RISC  
 
----
+Características:
 
-## 6. Execução do Projeto no Logisim Evolution
+Organização por endereços de 8 bits.
 
-1. Abra o Logisim Evolution.  
-2. Importe o arquivo `.circ` referente ao módulo desejado ou ao processador completo.  
-3. Ative a simulação em “Ticks Enabled”.  
-4. Observe o fluxo de dados:
-   - O PC gera o endereço da instrução.  
-   - A Memória de Instruções fornece a instrução ao Banco de Registradores e à ULA.  
-   - A ULA processa a operação e envia o resultado à Memória de Dados.  
-   - O PC é atualizado para a próxima instrução.  
+Controle de leitura (Read Enable) e escrita (Write Enable).
 
-Durante a execução, cada componente pode ser analisado individualmente, permitindo a compreensão detalhada de cada etapa do ciclo de instruções.
+Interligação direta com o banco de registradores e a ULA.
 
----
+5. Unidade de Controle
 
-## 8. Referências
+A Unidade de Controle coordena todo o funcionamento do processador, gerando sinais que definem as operações da ULA, acessos à memória e atualizações de registradores.
 
-- Patterson, D. A., & Hennessy, J. L. *Computer Organization and Design – The Hardware/Software Interface.*  
-- Stallings, W. *Computer Organization and Architecture – Designing for Performance.*  
-- Série de vídeos **GCC194 – Construindo um Processador ao Vivo**:  
-  1. [Parte 1 – PC e Memória de Instruções](https://youtu.be/7lCClSY4sHc)  
-  2. [Parte 2 – Banco de Registradores](https://youtu.be/HUPdAYDyIAM)  
-  3. [Parte 3 – ULA e Memória de Dados](https://youtu.be/Un2CYoah8tw)  
-  4. [Parte 4 – Integração e Controle](https://youtu.be/20LTwGX14Qs)
+graph TD
+    IR[Registrador de Instrução] --> DEC[Decodificador de OpCode]
+    DEC --> CTRL[Gerador de Sinais de Controle]
+    CTRL --> ULA
+    CTRL --> MEM
+    CTRL --> REG
+    CTRL --> PC
 
----
 
-## 9. Integrantes
+Responsabilidades:
 
-Aline Cristina Ribeiro de Barros – RA: 081230021  
-Luis Gustavo de Oliveira Carneiro – RA: 081230029  
-Roger Rocha da Silva – RA: 081230045  
-João Victor Pereira Andrade – RA: 081230010  
+Interpretar o campo opcode e funct das instruções.
 
-Novembro de 2025.
+Gerar sinais de controle apropriados para cada etapa do ciclo de instrução.
+
+Sincronizar as operações com o clock global do sistema.
+
+6. Integração do Sistema
+
+Na fase final do projeto, todos os módulos foram conectados para formar um processador funcional MIPS simplificado, capaz de executar instruções de forma sequencial e condicional.
+
+graph TD
+    PC[Program Counter] --> MEMI[Memória de Instruções]
+    MEMI --> IR[Registrador de Instrução]
+    IR --> CTRL[Unidade de Controle]
+    CTRL --> ALU
+    CTRL --> MEMD[Memória de Dados]
+    CTRL --> REGS[Banco de Registradores]
+    REGS --> ALU
+    ALU --> REGS
+    ALU --> MEMD
+
+Simulação e Testes
+
+Os testes foram realizados no Logisim Evolution, validando a execução de instruções básicas como:
+
+Operações aritméticas (ADD, SUB).
+
+Operações lógicas (AND, OR).
+
+Leitura e escrita em memória.
+
+Desvios condicionais baseados em flags.
+
+O processador foi simulado passo a passo, observando a propagação de sinais, atualização de registradores e mudanças no fluxo de execução.
+
+Ferramentas e Requisitos
+
+Logisim Evolution (versão 3.8.0 ou superior).
+
+Arquitetura MIPS simplificada de 8 bits.
+
+Sistema operacional compatível: Windows, Linux ou macOS.
+
+Referências
+
+Patterson, D. A.; Hennessy, J. L. – Computer Organization and Design: The Hardware/Software Interface.
+
+Nand2Tetris: Building a Modern Computer from First Principles.
+
+MIPS Architecture Reference Manual.
+
+Vídeos da série GCC194 – Construindo um Processador ao Vivo (YouTube).
+
+Integrantes do Projeto
+
+Aline Cristina Ribeiro de Barros – RA: 081230021
+
+Luis Gustavo de Oliveira Carneiro – RA: 081230029
+
+Roger Rocha da Silva – RA: 081230045
+
+João Victor Pereira Andrade – RA: 081230010
+
+Licença
+
+Este projeto é de uso acadêmico e livre para consulta e aprendizado, conforme os princípios de uso educacional da disciplina GCC194.
+
+Março de 2025

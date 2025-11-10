@@ -2,38 +2,38 @@
 
 Este repositório contém a implementação prática de um **processador baseado na arquitetura MIPS** desenvolvido no simulador Logisim Evolution. O projeto é resultado das aulas práticas da disciplina GCC194 - Arquitetura de Computadores, que abordam desde os conceitos básicos de lógica digital até a construção completa de um processador funcional.
 
-## 🎯 Objetivo
+## Objetivo
 
 Apresentar de forma didática e visual o funcionamento interno de um processador, implementando os principais componentes: **Program Counter (PC)**, **Memória de Instruções**, **Banco de Registradores**, **ULA (Unidade Lógica e Aritmética)** e **Memória de Dados**.
 
-## 📋 Estrutura do Projeto
+## Estrutura do Projeto
 
 O projeto foi desenvolvido em quatro etapas principais, correspondentes às partes da série de vídeos:
 
-### 🔹 Parte 1 – PC e Memória de Instruções
+### Parte 1 – PC e Memória de Instruções
 - Introdução ao simulador Logisim Evolution
 - Revisão de conceitos fundamentais de circuitos digitais
 - Implementação do **Program Counter (PC)** e da **memória de instruções**
 - Funcionamento do clock, endereço de instrução e fluxo básico de execução
 
-### 🔹 Parte 2 – Banco de Registradores
+### Parte 2 – Banco de Registradores
 - Criação do **banco de registradores** com múltiplos registradores de 8 bits
 - Funcionamento do flip-flop tipo D e sua aplicação na construção dos registradores
 - Leitura e escrita em registradores via sinais de controle (`RegWrite`)
 - Interligação com o PC e preparação para comunicação com a ULA
 
-### 🔹 Parte 3 – ULA e Memória de Dados
+### Parte 3 – ULA e Memória de Dados
 - Implementação da **Unidade Lógica e Aritmética (ULA)**
 - Operações básicas: soma, subtração e operações lógicas (AND, OR, etc.)
 - Criação e integração da **memória de dados**
 - Demonstração do ciclo completo de execução de instruções
 
-### 🔹 Parte 4 – Integração e Controle
+### Parte 4 – Integração e Controle
 - Conexão de todos os módulos do processador
 - Implementação da unidade de controle
 - Execução de programas completos no processador integrado
 
-## 🏗️ Diagrama de Blocos
+### Diagrama de Blocos
 
 ```
 Program Counter (PC) → Memória de Instruções → Banco de Registradores
@@ -41,7 +41,7 @@ Program Counter (PC) → Memória de Instruções → Banco de Registradores
 Unidade de Controle → ULA → Memória de Dados → Resultado/Saída
 ```
 
-## ⚙️ Módulos Implementados
+## Módulos Implementados
 
 ### 1. Program Counter (PC) e Memória de Instruções
 - **PC**: Registrador que armazena o endereço da próxima instrução
@@ -73,13 +73,13 @@ Unidade de Controle → ULA → Memória de Dados → Resultado/Saída
 - Geração de sinais de controle para todos os módulos
 - Sincronização com clock global do sistema
 
-## 🔧 Ferramentas Utilizadas
+## Ferramentas Utilizadas
 
 - **Logisim Evolution** - simulador digital para projeto e teste de circuitos
 - **Java Runtime** - necessário para executar o Logisim
 - Arquitetura MIPS simplificada de 8 bits
 
-## 🧠 Conceitos Envolvidos
+## Conceitos Envolvidos
 
 - Portas lógicas (AND, OR, NOT, XOR)
 - Multiplexadores e demultiplexadores
@@ -91,7 +91,7 @@ Unidade de Controle → ULA → Memória de Dados → Resultado/Saída
 - Ciclo de clock e controle de fluxo
 - Decodificação de instruções
 
-## 🚀 Como Executar
+## Como Executar
 
 1. Baixe e instale o **Logisim Evolution** (versão 3.8.0 ou superior)
 2. Abra o arquivo do projeto (.circ) no simulador
@@ -103,22 +103,22 @@ Unidade de Controle → ULA → Memória de Dados → Resultado/Saída
    - A ULA processa e devolve o resultado
    - O valor final é armazenado na memória de dados ou nos registradores
 
-## 📚 Referências
+## Referências
 
 - Patterson, D. A.; Hennessy, J. L. - *Computer Organization and Design: The Hardware/Software Interface*
 - Nand2Tetris: *Building a Modern Computer from First Principles*
 - MIPS Architecture Reference Manual
 - Vídeos da série **GCC194 - Construindo um Processador AO VIVO**
 
-## 👥 Integrantes do Projeto
+## Integrantes do Projeto
 
 - Aline Cristina Ribeiro de Barros – RA: 081230021
 - Luis Gustavo de Oliveira Carneiro – RA: 081230029
 - Roger Rocha da Silva – RA: 081230045
 - João Victor Pereira Andrade – RA: 081230010
 
-## 📄 Licença
+## Licença
 
 Este projeto é de uso acadêmico e livre para consulta e aprendizado, conforme os princípios de uso educacional da disciplina GCC194.
 
-**Março de 2025**
+Novembro de 2025.

@@ -119,6 +119,6 @@ Unidade de Controle → ULA → Memória de Dados → Resultado/Saída
 
 ## Licença
 
-Este projeto é de uso acadêmico e livre para consulta e aprendizado, conforme os princípios de uso educacional da disciplina GCC194.
+Este projeto é de uso acadêmico e livre para consulta e aprendizado, conforme os princípios de uso educacional da disciplina Arquitetura de Computadores.
 
 Novembro de 2025.

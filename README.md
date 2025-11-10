@@ -1,114 +1,186 @@
-# Construindo um Processador MIPS no Logisim Evolution
+# Processador MIPS Adaptado
 
-Este repositório contém a implementação prática de um **processador baseado na arquitetura MIPS** desenvolvido no simulador Logisim Evolution. O projeto é resultado das aulas práticas da disciplina GCC194 - Arquitetura de Computadores, que abordam desde os conceitos básicos de lógica digital até a construção completa de um processador funcional.
+Este projeto implementa um processador MIPS simplificado e adaptado, desenvolvido no Logisim para fins educacionais. O processador possui uma arquitetura de 8 bits com pipeline de 3 estágios.
 
-## Objetivo
+## 📋 Especificações Técnicas
 
-Apresentar de forma didática e visual o funcionamento interno de um processador, implementando os principais componentes: **Program Counter (PC)**, **Memória de Instruções**, **Banco de Registradores**, **ULA (Unidade Lógica e Aritmética)** e **Memória de Dados**.
+### Arquitetura Geral
+- **Barramento de dados**: 8 bits
+- **Barramento de endereços**: 8 bits
+- **Tamanho da instrução**: 18 bits
+- **Quantidade de registradores**: 8
+- **Pipeline**: 3 estágios (IFU, IDU, EXU)
 
-## Estrutura do Projeto
+### Unidades Principais
 
-O projeto foi desenvolvido em quatro etapas principais, correspondentes às partes da série de vídeos:
+## 1. Instruction Fetch Unit (IFU)
 
-### Parte 1 – PC e Memória de Instruções
-- Introdução ao simulador Logisim Evolution;
-- Revisão de conceitos fundamentais de circuitos digitais;
-- Implementação do **Program Counter (PC)** e da **memória de instruções**;
-- Funcionamento do clock, endereço de instrução e fluxo básico de execução.
+Responsável por buscar instruções da memória e controlar o fluxo do programa.
 
-### Parte 2 – Banco de Registradores
-- Criação do **banco de registradores** com múltiplos registradores de 8 bits;
-- Funcionamento do flip-flop tipo D e sua aplicação na construção dos registradores;
-- Leitura e escrita em registradores via sinais de controle (`RegWrite`);
-- Interligação com o PC e preparação para comunicação com a ULA.
+### Componentes:
+- **PC (Program Counter)**: Registrador de 8 bits
+- **Instruction Memory**: ROM de 8 bits de endereço × 18 bits de dados
+- **Lógica de desvio**: Controla sequência de execução
 
-### Parte 3 – ULA e Memória de Dados
-- Implementação da **Unidade Lógica e Aritmética (ULA)**;
-- Operações básicas: soma, subtração e operações lógicas (AND, OR, etc.);
-- Criação e integração da **memória de dados**;
-- Demonstração do ciclo completo de execução de instruções.
+### Lógica de Controle do PC:
 
-### Parte 4 – Integração e Controle
-- Conexão de todos os módulos do processador;
-- Implementação da unidade de controle;
-- Execução de programas completos no processador integrado.
+Próximo PC = (J + (B × Z)) ? ID:Address/IMM : PC + 1
 
-### Diagrama de Blocos
+Onde:
+- **J**: Sinal Jump da Control Unit
+- **B**: Sinal Branch da Control Unit  
+- **Z**: Sinal Equals da ALU
 
+## 2. Instruction Decode Unit (IDU)
+
+Decodifica instruções e gera sinais de controle.
+
+### Instruction Decoder
+Separa os 18 bits da instrução em campos:
+
+#### Formato R (Register):
+
+[17:15] Opcode | [14:12] Rs | [11:9] Rt | [8:6] Rd | [5:3] Shamt | [2:0] Funct
+
+#### Formato I (Immediate):
+[17:15] Opcode | [14:12] Rs | [11:9] Rt | [8] X | [7:0] Address/IMM
+
+
+### Control Unit (CU)
+Gera sinais de controle baseados no Opcode:
+
+| Opcode | Instrução | RegDst | RegWrite | ALUSrc | MemWrite | MemRead | MemToReg | Branch | Jump | ALUOp |
+|--------|-----------|---------|----------|---------|----------|---------|----------|---------|------|-------|
+| 000    | Tipo R    | 1       | 1        | 0       | 0        | 0       | 0        | 0       | 0    | 10    |
+| 001    | lw        | 0       | 1        | 1       | 0        | 1       | 1        | 0       | 0    | 00    |
+| 010    | sw        | X       | 0        | 1       | 1        | 0       | X        | 0       | 0    | 00    |
+| 011    | beq       | X       | 0        | 0       | 0        | 0       | X        | 1       | 0    | 01    |
+| 100    | addi      | 0       | 1        | 1       | 0        | 0       | 0        | 0       | 0    | 00    |
+| 111    | j         | X       | 0        | X       | 0        | 0       | X        | 0       | 1    | XX    |
+
+## 3. Execution Unit (EXU)
+
+Executa operações e gerencia dados.
+
+### Register File
+- **8 registradores** de 8 bits
+- **Portas de leitura**: 2 (Read data 1 e Read data 2)
+- **Porta de escrita**: 1 (Write data)
+
+#### Mapeamento de Registradores:
+000: $zero (sempre 0)
+001: $t0
+010: $t1
+011: $t2
+100: $t3
+101: $t4
+110: $t5
+111: $t6
+
+
+### ALU (Arithmetic Logic Unit)
+Operações suportadas:
+
+| ALUCtrl | Operação  | Descrição               |
+|---------|-----------|-------------------------|
+| 000     | add       | Soma                    |
+| 001     | sub       | Subtração               |
+| 010     | mult      | Multiplicação           |
+| 011     | div       | Divisão                 |
+| 100     | neg       | Negação                 |
+| 101     | slt       | Set Less Than + Equals  |
+| 110     | sll       | Shift Left Logical      |
+| 111     | srl       | Shift Right Logical     |
+
+### Data Memory
+- **Memória RAM**: 8 bits de endereço × 8 bits de dados
+- **Operações**: Leitura (MemRead) e Escrita (MemWrite)
+
+## 🔧 Conjunto de Instruções
+
+### Instruções Tipo R (Opcode: 000)
+add $rd, $rs, $rt # $rd = $rs + $rt
+sub $rd, $rs, $rt # $rd = $rs - $rt
+mult $rd, $rs, $rt # $rd = $rs × $rt
+slt $rd, $rs, $rt # $rd = ($rs < $rt) ? 1 : 0
+
+### Instruções Tipo I
+addi $rt, $rs, IMM # $rt = $rs + IMM
+lw $rt, IMM($rs) # $rt = MEM[$rs + IMM]
+sw $rt, IMM($rs) # MEM[$rs + IMM] = $rt
+beq $rs, $rt, IMM # if ($rs == $rt) PC = IMM
+
+### Instruções Tipo J
+j IMM # PC = IMM
+
+
+## 💻 Exemplo de Programação
+
+### Programa: Soma e Multiplicação
+```asm
+# Soma: 12 + 8 = 20
+addi $t0, $zero, 12    # $t0 = 12
+addi $t1, $zero, 8     # $t1 = 8
+add  $t2, $t0, $t1     # $t2 = 20
+
+# Multiplicação: 6 × 7 = 42
+addi $t4, $zero, 6     # $t4 = 6
+addi $t5, $zero, 7     # $t5 = 7
+mult $t6, $t4, $t5     # $t6 = 42
+
+# Armazenar na memória
+sw   $t6, 0($zero)     # MEM[0] = 42
+
+#### Codificação em Hexadecimal:
+2020C  // addi $t0, $zero, 12
+20408  // addi $t1, $zero, 8
+014C0  // add $t2, $t0, $t1
+20A06  // addi $t4, $zero, 6
+20C07  // addi $t5, $zero, 7
+05DC2  // mult $t6, $t4, $t5
+10E00  // sw $t6, 0($zero)
 ```
-Program Counter (PC) → Memória de Instruções → Banco de Registradores
-       ↓                    ↓                       ↓
-Unidade de Controle → ULA → Memória de Dados → Resultado/Saída
-```
 
-## Módulos Implementados
+Coloque na ROM de Instruction Memory e teste!
 
-### 1. Program Counter (PC) e Memória de Instruções
-- **PC**: Registrador que armazena o endereço da próxima instrução;
-- **Memória de Instruções**: ROM que contém o programa em código de máquina;
-- **Incrementador**: Soma +1 ao PC para próxima instrução sequencial;
-- **Controle de desvios**: Capacidade de saltos condicionais e incondicionais.
+### Dicas de Depuração:
+- Use CLEAR antes de executar novos programas
+- Execute passo a passo para verificar cada estágio
+- Verifique sinais da Control Unit durante execução
+- Confirme timing de escrita nos registradores
 
-### 2. Banco de Registradores
-- 8 registradores de 8 bits cada;
-- Leituras duplas simultâneas (Read Data 1 e Read Data 2);
-- Escrita síncrona controlada por sinal `RegWrite`;
-- Endereçamento por código binário (3 bits para 8 registradores).
+## 🚀 Fluxo de Execução
+### Ciclo de Instrução:
+1. IFU (Instruction Fetch)
+- PC envia endereço para Instruction Memory
+- Instrução é buscada e enviada para IDU
+2. IDU (Instruction Decode)
+- Instrução é decodificada em campos
+- Control Unit gera sinais de controle
+- Register File lê registradores especificados
+3. EXU (Execution)
+- ALU executa operação com operandos
+- Data Memory realiza acesso se necessário
+- Resultado é escrito no Register File
 
-### 3. Unidade Lógica e Aritmética (ULA)
-- **Operações aritméticas**: Soma, subtração, multiplicação, divisão;
-- **Operações lógicas**: AND, OR, XOR, NOT;
-- **Operações de deslocamento**: Shift left, shift right;
-- **Flags de status**: Zero, negativo, overflow;
-- Entrada de função de 3 bits para seleção da operação.
+### Timing
+Leitura de registradores: valor atual
 
-### 4. Memória de Dados
-- Memória RAM para armazenamento de variáveis e dados;
-- Acesso por endereço de 8 bits;
-- Controle de leitura/escrita;
-- Integração direta com a ULA e banco de registradores.
+Escrita em registradores: próxima borda de clock
 
-### 5. Unidade de Controle
-- Decodificação de instruções (opcode e funct);
-- Geração de sinais de controle para todos os módulos;
-- Sincronização com clock global do sistema.
+Acesso à memória: durante estágio EXU
 
-## Ferramentas Utilizadas
+## 📝 Notas de Implementação
+### Características Específicas:
+- Instruction Memory: ROM com palavras de 18 bits
+- Data Memory: RAM com palavras de 8 bits
+- Todos os sinais são ativos em alto (1)
+- Clock controla escrita em registradores e memória
 
-- **Logisim Evolution** - simulador digital para projeto e teste de circuitos;
-- **Java Runtime** - necessário para executar o Logisim;
-- Arquitetura MIPS simplificada de 8 bits.
-
-## Conceitos Envolvidos
-
-- Portas lógicas (AND, OR, NOT, XOR);
-- Multiplexadores e demultiplexadores;
-- Flip-flops tipo D;
-- Contador de programa (PC);
-- Banco de registradores;
-- Unidade Lógica e Aritmética (ULA);
-- Memória de instruções e memória de dados;
-- Ciclo de clock e controle de fluxo;
-- Decodificação de instruções.
-
-## Como Executar
-
-1. Baixe e instale o **Logisim Evolution** (versão 3.8.0 ou superior);
-2. Abra o arquivo do projeto (.circ) no simulador;
-3. Ative o modo de simulação usando o controle de clock;
-4. Observe o fluxo dos dados entre os componentes:
-   - O PC fornece o endereço da próxima instrução;
-   - A memória de instruções envia o código para decodificação;
-   - O banco de registradores fornece os operandos para a ULA;
-   - A ULA processa e devolve o resultado;
-   - O valor final é armazenado na memória de dados ou nos registradores.
-
-## Referências
-
-- Patterson, D. A.; Hennessy, J. L. - *Computer Organization and Design: The Hardware/Software Interface*
-- Nand2Tetris: *Building a Modern Computer from First Principles*
-- MIPS Architecture Reference Manual
-- Vídeos da série **GCC194 - Construindo um Processador AO VIVO**
+### Limitações Conhecidas:
+- Tamanho limitado de memória (256 bytes)
+- Conjunto reduzido de instruções
+- Não suporta interrupções ou exceções
 
 ## Integrantes do Projeto
 

@@ -116,6 +116,7 @@ Unidade de Controle → ULA → Memória de Dados → Resultado/Saída
 - Luis Gustavo de Oliveira Carneiro – RA: 081230029
 - Roger Rocha da Silva – RA: 081230045
 - João Victor Pereira Andrade – RA: 081230010
+- André Mendes Garcia - RA: 081230012
 
 ## Licença
 

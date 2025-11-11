@@ -2,6 +2,8 @@
 
 Este projeto implementa um processador MIPS simplificado e adaptado, desenvolvido no Logisim para fins educacionais. O processador possui uma arquitetura de 8 bits com pipeline de 3 estágios.
 
+Confira o vídeo explicativo clicando (aqui)[https://youtu.be/AuRI3dCpmVk]!
+
 ## 📋 Especificações Técnicas
 - **Barramento de dados**: 8 bits
 - **Barramento de endereços**: 8 bits
